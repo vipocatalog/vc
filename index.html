@@ -11,7 +11,7 @@
       --fg: #ffffff;
       --accent: #25d366; /* WhatsApp */
       --gold: #c9a227;
-      --duration: 12s; /* total loop duration: 4 slides x 3s each */
+      --duration: 6s; /* total loop duration: 4 slides x 1.5s each */
       --ease: cubic-bezier(.22,.61,.36,1);
     }
     * { box-sizing: border-box; }
@@ -160,7 +160,7 @@
       opacity:.98;
     }
     .price .old{
-      position: relative; margin-inline-start: .5em; color: rgba(255,255,255,.85);
+      position: relative; margin-inline-start: .5em; color: red;
       font-weight:700;
     }
     .price .old::after{
@@ -222,6 +222,16 @@
     /* Small helper for desktop preview */
     @media (min-aspect-ratio: 9/16){
       .stage{ height:92vh; width: calc(92vh * 9 / 16); }
+    }
+    
+    /* Mobile: double text sizes for better readability */
+    @media (max-width: 480px){
+      .headline .en{ font-size: clamp(28px, 3.76vh, 37.4px); }
+      .headline .he{ font-size: clamp(31.2px, 4.36vh, 43.68px); }
+      .brand{ font-size: clamp(26px, 3.6vh, 32px); }
+      .promo{ font-size: clamp(24px, 3.2vh, 28px); }
+      .price{ font-size: clamp(24px, 3.2vh, 28px); }
+      .cta{ font-size: clamp(16.8px, 2.52vh, 19.2px); }
     }
   </style>
 </head>
