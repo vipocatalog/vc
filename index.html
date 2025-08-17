@@ -152,7 +152,8 @@
     /* Price tag above brand */
     .price{
       position:absolute; top:8%; left:0; right:0; z-index:4;
-      display:flex; justify-content:center; align-items:center;
+      display:flex; justify-content:center; align-items: baseline;
+      gap: .9em;
       font-weight:700; letter-spacing:.02em;
       font-size: clamp(12px, 1.6vh, 14px);
       color: var(--gold);
@@ -160,12 +161,12 @@
       opacity:.98;
     }
     .price .old{
-      position: relative; margin-inline-start: 3ch; color: red;
+      position: relative; margin-inline-start: 0; color: red;
       font-weight:700;
     }
     .price .old::after{
       content: ""; position:absolute; left:-6%; right:-6%; top:50%;
-      border-top: 2px solid rgba(255,255,255,.9);
+      border-top: 2px solid rgba(255,0,0,.9);
       transform: rotate(-12deg); transform-origin: center;
     }
     
@@ -268,7 +269,10 @@
       <div class="promo" aria-label="רכישה קבוצתית במחיר מפעל">רכישה קבוצתית במחיר מפעל</div>
 
       <!-- Price -->
-      <div class="price" aria-label="מחיר">מחיר: 4900 שקל <span class="old" dir="ltr" aria-label="מחיר קודם">12,000 ₪</span></div>
+      <div class="price" aria-label="מחיר">
+        <span class="current">מחיר: 4900 שקל</span>
+        <span class="old" dir="ltr" aria-label="מחיר קודם">12,000 ₪</span>
+      </div>
 
       <!-- Branding -->
       <div class="brand" aria-hidden="true">
