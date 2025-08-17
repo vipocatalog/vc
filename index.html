@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>VC LUXURY MASSAGE — Mobile Showcase</title>
+  <meta name="description" content="VC LUXURY MASSAGE — אנימציה יוקרתית מותאמת למובייל להצגת 3 דגמי כורסאות.">
+  <style>
+    :root{
+      --bg: #000;
+      --fg: #ffffff;
+      --accent: #25d366; /* WhatsApp */
+      --gold: #c9a227;
+      --duration: 12s; /* total loop duration: 4 slides x 3s each */
+      --ease: cubic-bezier(.22,.61,.36,1);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      overflow:hidden;
+    }
+
+    /* Safe frame with 9:16 aspect ratio, centered */
+    .frame{
+      position:fixed; inset:0; display:grid; place-items:center;
+      padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .stage{
+      position:relative; width:100vw; height:100vh; max-height:100dvh;
+      aspect-ratio: 9 / 16;
+      background:#000;
+      overflow:hidden; border-radius: 20px;
+      box-shadow: 0 10px 50px rgba(0,0,0,.6);
+      isolation:isolate;
+    }
+
+    /* Vignette + subtle gradient glow */
+    .vignette, .glow {
+      position:absolute; inset:0; pointer-events:none; z-index:2;
+    }
+    .vignette{
+      background:
+        radial-gradient(120% 80% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 85%, rgba(0,0,0,.78) 100%);
+      mix-blend-mode: multiply;
+    }
+    .glow{
+      background:
+        radial-gradient(40% 20% at 50% 15%, rgba(255,255,255,.08), transparent 60%),
+        radial-gradient(50% 25% at 45% 80%, rgba(201,162,39,.08), transparent 70%);
+      filter: blur(2px);
+    }
+
+    /* Slides */
+    .slide{
+      position:absolute; inset:0; z-index:0; opacity:0;
+      animation: slide var(--duration) var(--ease) infinite;
+    }
+    .slide .backdrop,
+    .slide .image{
+      position:absolute; inset:0; background-position:center; background-repeat:no-repeat;
+      background-image: var(--img);
+    }
+    /* Blurred fill to avoid empty bars, keeps a premium feel */
+    .slide .backdrop{
+      background-size: cover;
+      filter: blur(14px) brightness(.55);
+      transform: scale(1.06);
+    }
+    /* Crisp product layer, ensures full sofa fits */
+    .slide .image{
+      background-size: contain;
+      /* Disable motion to minimize perceived change between slides */
+      animation: none;
+    }
+    .slide.s1{ animation-delay: 0s; }
+    .slide.s2{ animation-delay: calc(var(--duration) / 4); }
+    .slide.s3{ animation-delay: calc(2 * var(--duration) / 4); }
+    .slide.s4{ animation-delay: calc(3 * var(--duration) / 4); }
+
+    @keyframes slide{
+      /* Softer, longer crossfade to feel like color swap */
+      0%   { opacity:0; }
+      12%  { opacity:1; }
+      54%  { opacity:1; }
+      66%  { opacity:0; }
+      100% { opacity:0; }
+    }
+
+    /* Subtle, professional motion without crop */
+    @keyframes kenburns{
+      /* kept for reference; currently disabled */
+      0%   { transform: scale(1) translateY(0); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    /* Headline */
+    .headline{
+      position:absolute; inset:auto 6% 1% 6%;
+      z-index:3; text-align:center;
+      line-height:1.2;
+      filter: drop-shadow(0 4px 18px rgba(0,0,0,.65));
+      /* Keep headline constant across slides */
+      animation: none;
+      opacity: 1;
+    }
+    .headline .en{
+      /* Reduced by ~22% */
+      font-size: clamp(14px, 1.88vh, 18.7px);
+      letter-spacing:.08em; opacity:.95;
+      text-transform: uppercase;
+    }
+    .headline .he{
+      margin-top:.25em;
+      /* Reduced by ~22% */
+      font-size: clamp(15.6px, 2.18vh, 21.84px);
+      font-weight: 700;
+    }
+    .headline .bar{
+      width: 80px; height: 2px; margin:.6em auto 0;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity:.85;
+    }
+    @keyframes headPulse{
+      0%, 100% { opacity:0; transform: translateY(6px); }
+      8%, 24%  { opacity:1; transform: translateY(0); }
+      28%, 96% { opacity:0; transform: translateY(6px); }
+    }
+
+    /* Branding (top) */
+    .brand{
+      position:absolute; top:12%; left:0; right:0; z-index:4;
+      display:flex; justify-content:center; align-items:center; gap:.6em;
+      letter-spacing:.12em; text-transform:uppercase; font-weight:600;
+      font-size: clamp(13px, 1.8vh, 16px);
+      opacity:.9;
+    }
+    .brand .dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow: 0 0 18px rgba(201,162,39,.6); }
+
+    /* Group purchase promo above price */
+    .promo{
+      position:absolute; top:3%; left:0; right:0; z-index:4;
+      display:flex; justify-content:center; align-items:center;
+      font-weight:800; letter-spacing:.01em;
+      font-size: clamp(12px, 1.6vh, 14px);
+      color:#ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,.45);
+      opacity:.98;
+    }
+
+    /* Price tag above brand */
+    .price{
+      position:absolute; top:8%; left:0; right:0; z-index:4;
+      display:flex; justify-content:center; align-items:center;
+      font-weight:700; letter-spacing:.02em;
+      font-size: clamp(12px, 1.6vh, 14px);
+      color: var(--gold);
+      text-shadow: 0 2px 10px rgba(0,0,0,.45);
+      opacity:.98;
+    }
+    .price .old{
+      position: relative; margin-inline-start: .5em; color: rgba(255,255,255,.85);
+      font-weight:700;
+    }
+    .price .old::after{
+      content: ""; position:absolute; left:-6%; right:-6%; top:50%;
+      border-top: 2px solid rgba(255,255,255,.9);
+      transform: rotate(-12deg); transform-origin: center;
+    }
+    
+    /* Intro video slide (plays once before slideshow) */
+    .video-slide{ position:absolute; inset:0; z-index:0; opacity:1; }
+    .video-slide video{ width:100%; height:100%; object-fit:contain; display:block; background:#000; }
+    .video-slide.hide{ opacity:0; pointer-events:none; transition: opacity .6s var(--ease); }
+
+    /* Pause slide animations until intro video ends */
+    .slideshow:not(.animate) .slide{ animation-play-state: paused; opacity:0; }
+    .slideshow.animate .slide{ animation-play-state: running; }
+
+    /* Show texts also during intro video, same positions */
+    .headline,
+    .promo,
+    .price,
+    .brand{
+      opacity:1; pointer-events:auto; transition: opacity .3s var(--ease);
+    }
+
+
+    /* CTA WhatsApp (disabled) */
+    .cta-wrap{ position:absolute; left:0; right:0; top:10%; bottom:auto; z-index:5; display:none !important; justify-content:center; margin:0; }
+    .cta{
+      position:static; display:inline-flex; align-items:center; gap:.39em;
+      padding:.54em .72em; border-radius: 999px; white-space: nowrap;
+      text-decoration:none; color:#ffffff;
+      font-weight:700; font-size: clamp(8.4px, 1.26vh, 9.6px);
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      box-shadow: 0 8px 24px rgba(18,140,126,.35);
+      border: 1px solid rgba(255,255,255,.14);
+      opacity:0;
+      animation: ctaIn var(--duration) var(--ease) infinite;
+      will-change: transform, opacity;
+      transition: box-shadow .25s ease, transform .25s ease, filter .25s ease;
+    }
+    .cta:hover{ box-shadow: 0 10px 30px rgba(18,140,126,.45); transform: translateY(-1px); }
+    .cta:active{ transform: translateY(0) scale(.98); }
+    .cta:focus-visible{ outline: 2px solid rgba(255,255,255,.85); outline-offset: 3px; }
+    .cta .wa{
+      width:1.35em; height:1.35em; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .cta .wa svg{ width:1.15em; height:1.15em; display:block; }
+    .cta .label{ white-space: nowrap; }
+    .cta .sub{ opacity:.8; font-weight:600; display:none; }
+    @keyframes ctaIn{
+      0%, 70% { opacity:0; transform: translateY(8px); }
+      76%, 96%{ opacity:1; transform: translateY(0); }
+      100%    { opacity:0; transform: translateY(8px); }
+    }
+    
+    /* Reduced-motion override disabled per user request: animations always run */
+
+    /* Small helper for desktop preview */
+    @media (min-aspect-ratio: 9/16){
+      .stage{ height:92vh; width: calc(92vh * 9 / 16); }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame" aria-label="VC LUXURY MASSAGE mobile showcase">
+    <div class="stage slideshow" role="img" aria-label="תצוגת שקופיות מונפשת של 4 דגמי כורסאות עיסוי יוקרתיות">
+      <!-- Slides (pointing to existing files in /assets) -->
+      <div class="slide s1" style="--img: url('assets/1.jpg');">
+        <div class="backdrop"></div>
+        <div class="image"></div>
+      </div>
+      <div class="slide s2" style="--img: url('assets/2.jpg');">
+        <div class="backdrop"></div>
+        <div class="image"></div>
+      </div>
+      <div class="slide s3" style="--img: url('assets/3.jpg');">
+        <div class="backdrop"></div>
+        <div class="image"></div>
+      </div>
+      <div class="slide s4" style="--img: url('assets/4.jpg');">
+        <div class="backdrop"></div>
+        <div class="image"></div>
+      </div>
+
+      <!-- Intro video (plays once, then fades and slideshow begins) -->
+      <div class="video-slide" aria-label="וידאו פתיחה" role="group">
+        <video src="assets/1.mp4" autoplay muted playsinline webkit-playsinline preload="auto"></video>
+      </div>
+
+      <div class="vignette"></div>
+      <div class="glow"></div>
+
+      <!-- Promo (above price) -->
+      <div class="promo" aria-label="רכישה קבוצתית במחיר מפעל">רכישה קבוצתית במחיר מפעל</div>
+
+      <!-- Price -->
+      <div class="price" aria-label="מחיר">מחיר: 4900 שקל <span class="old" dir="ltr" aria-label="מחיר קודם">12,000 ₪</span></div>
+
+      <!-- Branding -->
+      <div class="brand" aria-hidden="true">
+        <span class="dot"></span>
+        VC LUXURY MASSAGE
+        <span class="dot"></span>
+      </div>
+
+      <script>
+        (function(){
+          const root = document.querySelector('.slideshow');
+          const videoWrap = root && root.querySelector('.video-slide');
+          const video = videoWrap && videoWrap.querySelector('video');
+          const slides = root ? Array.from(root.querySelectorAll('.slide')) : [];
+
+          // Helpers
+          const getDurationMs = () => {
+            const cs = getComputedStyle(document.documentElement);
+            const val = (cs.getPropertyValue('--duration') || '12s').trim();
+            const m = val.match(/([0-9]*\.?[0-9]+)s/);
+            const sec = m ? parseFloat(m[1]) : 12;
+            return Math.max(1000, sec * 1000);
+          };
+
+          let slideshowTimer = null;
+
+          function startSlides(){
+            if(videoWrap){ videoWrap.classList.add('hide'); }
+            if(root){ root.classList.add('animate'); }
+            // Ensure animations actually start on all slides
+            slides.forEach((el,i)=>{
+              el.style.animationPlayState = 'running';
+              if(i===0){ el.style.opacity = '1'; }
+            });
+            // Schedule showing video again after one full cycle
+            if(slideshowTimer) clearTimeout(slideshowTimer);
+            slideshowTimer = setTimeout(()=>{
+              showVideo();
+            }, getDurationMs());
+          }
+
+          function pauseSlides(){
+            if(root){ root.classList.remove('animate'); }
+            slides.forEach(el=>{ el.style.animationPlayState = 'paused'; });
+          }
+
+          function showVideo(){
+            if(slideshowTimer) { clearTimeout(slideshowTimer); slideshowTimer = null; }
+            pauseSlides();
+            if(videoWrap){ videoWrap.classList.remove('hide'); }
+            if(video){
+              try{ video.currentTime = 0; }catch(_e){}
+              tryPlay();
+            }
+          }
+
+          if(!root){ return; }
+          if(!video){ startSlides(); return; }
+
+          // Try to ensure playback starts; if blocked, begin slideshow
+          const tryPlay = () => {
+            const p = video.play && video.play();
+            if(p && typeof p.then === 'function'){
+              p.catch(() => startSlides());
+            }
+          };
+          tryPlay();
+
+          // Fallback: if 'ended' never fires for the video, start slides after real duration (+fade)
+          let fallback = null;
+          const setDynamicFallback = () => {
+            if(!video.duration || !isFinite(video.duration)) return;
+            const ms = Math.min(60000, Math.max(3000, (video.duration * 1000) + 800));
+            if(fallback) clearTimeout(fallback);
+            fallback = setTimeout(startSlides, ms);
+          };
+
+          video.addEventListener('loadedmetadata', setDynamicFallback, { once:true });
+          video.addEventListener('durationchange', setDynamicFallback);
+          video.addEventListener('playing', setDynamicFallback, { once:true });
+
+          // Start slides after video ends or on error
+          video.addEventListener('ended', () => { startSlides(); }, { once:false });
+          video.addEventListener('error', () => { if(fallback) clearTimeout(fallback); startSlides(); }, { once:true });
+
+          // Allow tap to skip to slides
+          if(videoWrap){ videoWrap.addEventListener('click', () => { if(fallback) clearTimeout(fallback); startSlides(); }, { once:true }); }
+        })();
+      </script>
+
+      <!-- Headline -->
+      <div class="headline" aria-live="polite">
+        <div class="en">Luxury Massage Experience</div>
+        <div class="he">חווית עיסוי יוקרתית</div>
+        <div class="bar" aria-hidden="true"></div>
+      </div>
+
+      <!-- CTA disabled -->
+      <div class="cta-wrap" role="presentation">
+        <a class="cta" href="https://wa.me/972555545821" target="_blank" rel="noopener" aria-label="שלחו הודעת WhatsApp ל-055-554-5821">
+          <span class="wa" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" aria-hidden="true">
+              <path fill="#ffffff" d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75c-1.69 0-3.28-.42-4.67-1.16L3.6 20.4l-.07-.02a.6.6 0 0 1-.38-.76ל1.06-3.19A9.71 9.71 0 0 1 2.25 12c0-5.385 4.365-9.75 9.75-9.75Z"/>
+              <path fill="#ffffff" d="M9.47 7.53c.29-.29.76-.29 1.06 0l.72.72c.41.41.46 1.03.19 1.51ל-.15.26 1.08 1.08.26-.15c.48-.27 1.1-.22 1.51.19l.72.72c.29.29.29.76 0 1.06ל-.69.69c-.2.2-.52.2-.72 0l-1.02-1.02c-.48.27-1.1.22-1.51-.19l-1.08-1.08c-.41-.41-.46-1.03-.19-1.51l.26-.45-.72-.72a.75.75 0 0 1 0-1.06Z"/>
+            </svg>
+          </span>
+          <span class="label"><span lang="en">WhatsApp</span> • <span dir="ltr">055-554-5821</span></span>
+        </a>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preload images for smooth transitions
+    (function(){
+      const imgs = ["assets/1.jpg","assets/2.jpg","assets/3.jpg","assets/4.jpg"];
+      imgs.forEach(src => { const i = new Image(); i.src = src; });
+    })();
+  </script>
+</body>
+</html>
